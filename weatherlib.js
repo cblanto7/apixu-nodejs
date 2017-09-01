@@ -28,6 +28,9 @@ exports.currentWeather = function currentWeather (query, callback, errorcallback
   }).end()
 }
 
+// forecast weather takes pin code or location as first parameter,
+// errorHandler callback for 2nd parameter, CONSTANT number of days
+// requested as the third parameter, and parseObject callback as 4th parameter
 exports.forecastWeather = function forecastWeather (query, errorcallback, noOfDays, callback) {
   options.path = '/v1/forecast.json?key=' + apiKey + '&q=' + query + '&days=' + noOfDays
   http.request(options, function (res) {
