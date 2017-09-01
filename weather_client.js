@@ -1,7 +1,37 @@
 var weather = require('./weatherlib')
 
 const NUM_DAYS_REQ = 7
+//***************************** connection to postgreSQL
+const { Pool } = require('pg')
+const connectionString = 'postgres://***REMOVED***:***REMOVED***@aws-us-east-1-portal.9.dblayer.com:20947/***REMOVED***'
 
+const pool = new Pool({
+  connectionString: connectionString
+})
+
+const query = {
+  // give the query a unique name
+  name: 'testing weather client',
+  text: 'SELECT * FROM weathertable'
+}
+
+// callback
+pool.query(query, (err, res) => {
+  if (err) {
+    console.log(err.stack)
+  } else {
+    console.log(res.rows[0])
+  }
+})
+
+pool.connect()
+// promise
+pool.query(query)
+  .then(res => console.log(res.rows[0]))
+  .catch(e => console.error(e.stack))
+pool.end()
+
+//*****************************************
 var errorHandler = function () {
   console.log('got some error')
 }
@@ -21,12 +51,16 @@ var parseObject = function (obj) {
   for (i = 0; i < dLen; i++) {
     console.log(days[i].date)
     for (var j = 0; j < days[i].hour.length; j++) {
+    	/*
       console.log('\t' + days[i].hour[j].time)
       console.log('\t\t Temperature(F) :' + days[i].hour[j].temp_f)
       console.log('\t\t Night(0)-Day(1):' + days[i].hour[j].is_day)
       console.log('\t\t Wind Speed(Mph):' + days[i].hour[j].wind_mph)
       console.log('\t\t Wind Direction :' + days[i].hour[j].wind_dir)
       console.log('\t\t Conditions     :' + days[i].hour[j].condition.text)
+      console.log('\t\t chance of rain :' + days[i].hour[j].chance_of_rain)
+      console.log('\t\t chance of rain :' + days[i].hour[j].chance_of_snow)
+      */
     }
   }
 
@@ -40,4 +74,4 @@ var parseObject = function (obj) {
 // weather.currentWeather(20500, parseObject, errorHandler);
 
 // forecast weather takes pin code or location as first parameter, number of days as second, error handler callback as second
-weather.forecastWeather(20500, errorHandler, NUM_DAYS_REQ, parseObject)
+weather.forecastWeather(37213, errorHandler, NUM_DAYS_REQ, parseObject)
