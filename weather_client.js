@@ -1,7 +1,8 @@
 var weather = require('./weatherlib')
 
 const NUM_DAYS_REQ = 7
-//***************************** connection to postgreSQL
+
+//********************************* connection to postgreSQL
 const { Pool } = require('pg')
 const connectionString = 'postgres://***REMOVED***:***REMOVED***@aws-us-east-1-portal.9.dblayer.com:20947/***REMOVED***'
 
@@ -15,6 +16,7 @@ const query = {
   text: 'SELECT * FROM weathertable'
 }
 
+pool.connect()
 // callback
 pool.query(query, (err, res) => {
   if (err) {
@@ -24,14 +26,14 @@ pool.query(query, (err, res) => {
   }
 })
 
-pool.connect()
 // promise
 pool.query(query)
   .then(res => console.log(res.rows[0]))
   .catch(e => console.error(e.stack))
-pool.end()
 
-//*****************************************
+pool.end()
+//*************************************************
+
 var errorHandler = function () {
   console.log('got some error')
 }
@@ -73,5 +75,7 @@ var parseObject = function (obj) {
 // current weather takes pin code or location as first parameter, error handler callback as second
 // weather.currentWeather(20500, parseObject, errorHandler);
 
-// forecast weather takes pin code or location as first parameter, number of days as second, error handler callback as second
+// forecast weather takes pin code or location as first parameter,
+// errorHandler callback for 2nd parameter, CONSTANT number of days
+// requested as the third parameter, and parseObject callback as 4th parameter
 weather.forecastWeather(37213, errorHandler, NUM_DAYS_REQ, parseObject)
