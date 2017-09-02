@@ -9,7 +9,7 @@ var options = {
   method: 'GET'
 }
 
-exports.currentWeather = function currentWeather (query, callback, errorcallback) {
+exports.currentWeather = function currentWeather (query, callback) {
   options.path = '/v1/current.json?key=' + apiKey + '&q=' + query
   http.request(options, function (res) {
     res.setEncoding('utf8')
@@ -24,15 +24,14 @@ exports.currentWeather = function currentWeather (query, callback, errorcallback
   }).on('error', function (err) {
         // handle errors with the request itself
     console.error('Error with the request:', err.message)
-    errorcallback(err)
+    callback(err)
   }).end()
 }
 
 // forecast weather takes pin code or location as first parameter,
-// errorHandler callback for 2nd parameter, CONSTANT number of days
-// requested as the third parameter, and parseObject callback as 4th parameter
-exports.forecastWeather = function forecastWeather (query, errorcallback, noOfDays, callback) {
-  options.path = '/v1/forecast.json?key=' + apiKey + '&q=' + query + '&days=' + noOfDays
+//   number of days requested as 2nd param, and a callback as 3rd param
+exports.forecastWeather = function forecastWeather (query, targetHour, numOfDays, callback) {
+  options.path = '/v1/forecast.json?key=' + apiKey + '&q=' + query + '&days=' + numOfDays
   http.request(options, function (res) {
     res.setEncoding('utf8')
     var body = ''
@@ -41,11 +40,11 @@ exports.forecastWeather = function forecastWeather (query, errorcallback, noOfDa
     })
     res.on('end', function (chunk) {
       var obj = JSON.parse(body)
-      callback(obj)
+      callback(null, targetHour, obj)
     })
   }).on('error', function (err) {
         // handle errors with the request itself
     console.error('Error with the request:', err.message)
-    errorcallback(err)
+    callback(err)
   }).end()
 }
