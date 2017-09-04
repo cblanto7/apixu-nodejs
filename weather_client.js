@@ -64,50 +64,49 @@ var parseObject = function (err, target, rows, obj) { // obj is one week of data
   if (err) {
     console.log(err.stack)
   } else {
-    var days = []
-    // fill days array
-    var fLen = obj.forecast.forecastday.length
-    for (var i = 0; i < fLen; i++) {
-      days[i] = obj.forecast.forecastday[i] // one day's forecast contains 24 hours
-    }
-    console.log('Parsed some JSON Object : ' + globObjsParsed++)
-    processDays(null, days, rows, target)
+    console.log('Parsed some JSON Object : ' + ++globObjsParsed)
+    processDays(null, obj.forecast.forecastday, rows, target)
   }
+}
+
+var buildUpdate = function (day, timeInc, zip) {
+  var setquery = {
+    // give the query a unique name
+    name: 'update from weather predictor',
+    text: '' // needs to be built
+  }
+
+  console.log('\t' + day.time + ', temp :' + day.temp_f)
+  setquery.text += 'UPDATE  weathertable SET '
+  setquery.text += 'temperature = \'' + day.temp_f + '\', '
+  setquery.text += 'weatherupdated = true, '
+  setquery.text += 'windspeed = \'' + day.wind_mph + '\', '
+  setquery.text += 'winddirection = \'' + day.wind_dir + '\', '
+  setquery.text += 'humidity = \'' + day.humidity + '%\' '
+  setquery.text += 'WHERE timevalue = ' + timeInc + ' AND zip = \'' + zip + '\''
+  setquery.text += ' AND week = ' + WEEK_NUMBER + '\n'
+  console.log(setquery.text)
+
+  return setquery
 }
 
 var processDays = function (err, days, rows, target, callback) { // from apixu API future weather info
   if (err) {
     console.log(err.stack)
   } else {
-    var setquery = {
-      // give the query a unique name
-      name: 'update from weather predictor',
-      text: '' // needs to be built
-    }
-
     console.log('\tsearching for target: ' + target)
     for (var i = 0; i < days.length; i++) {
+      var timeInc = 1
       for (var j = 0; j < 4; j++) {
-        setquery.text += 'UPDATE  weathertable SET '
-        console.log('\t' + days[i].hour[target + j].time + ', temp :' + days[i].hour[target].temp_f)
-        setquery.text += 'temperature = \'' + days[i].hour[target + j].temp_f + '\', '
-        setquery.text += 'weatherupdated = true, '
-        setquery.text += 'windspeed = \'' + days[i].hour[target + j].wind_mph + '\', '
-        setquery.text += 'winddirection = \'' + days[i].hour[target + j].wind_dir + '\', '
-        setquery.text += 'humidity = \'' + days[i].hour[target + j].humidity + '%\' '
-        setquery.text += 'WHERE timevalue = ' + (j + 1) + ' AND zip = \'' + rows[0].zip + '\''
-        setquery.text += ' AND week = ' + WEEK_NUMBER + '\n'
-        // callback
+        client.query(buildUpdate(days[i].hour[target + j], timeInc, rows[0].zip), (err, res) => {
+          if (err) {
+            console.log(err.stack)
+          } else {
+            console.log('query did not return any errors')
+          }
+        })
+        timeInc += 2
       }
     }
-    console.log(setquery.text)
-    client.query(setquery, (err, res) => {
-      if (err) {
-        console.log(err.stack)
-      } else {
-        console.log('Update was successful')
-        client.end()
-      }
-    })
   }
 }
