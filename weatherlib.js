@@ -31,7 +31,7 @@ exports.currentWeather = function currentWeather (query, callback) {
 // forecast weather takes pin code or location as first parameter,
 //   number of days requested as 2nd param, and a callback as 3rd param
 exports.forecastWeather = function forecastWeather (query, target, rows, callback) {
-  options.path = '/v1/forecast.json?key=' + apiKey + '&q=' + query + '&dt=' + rows[0].stringdateofgame
+  options.path = '/v1/forecast.json?key=' + apiKey + '&q=' + query + '&days=7'
   http.request(options, function (res) {
     res.setEncoding('utf8')
     var body = ''

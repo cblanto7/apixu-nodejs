@@ -1,8 +1,0 @@
-UPDATE `membership_list`
-  SET `Country` = CASE `One_or_zero`
-    WHEN '1' THEN 'Switzerland'
-    WHEN '0' THEN 'Russia'
-  END
-WHERE `One_or_zero` in (0,1) 
-  AND `S_ID`='205G0'
-  AND `Name`='Bob';
