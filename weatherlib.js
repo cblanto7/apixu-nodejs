@@ -40,7 +40,7 @@ exports.forecastWeather = function forecastWeather (query, target, rows, callbac
     })
     res.on('end', function (chunk) {
       var obj = JSON.parse(body)
-      callback(null, target, rows, obj)
+      callback(null, target, rows, obj, query)
     })
   }).on('error', function (err) {
         // handle errors with the request itself
