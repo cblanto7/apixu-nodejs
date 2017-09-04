@@ -3,6 +3,7 @@ var weather = require('./weatherlib')
 const WEEK_NUMBER = 1 // Todo: make variable not constant
 
 var globObjsParsed = 0
+var drainmade = false
 
 // ********************************* connection to postgreSQL
 const { Client } = require('pg')
@@ -36,8 +37,6 @@ client.query(query, (err, res) => {
     determineHours(res.rows)
   }
 })
-
-client.on('drain', client.end.bind(client))
 
 // ************************************************ end connection stuff
 
@@ -378,5 +377,9 @@ var processDays = function (err, days, rows, target, zip, callback) { // from ap
         })
       }
     })
+    if (!drainmade) {
+      client.on('drain', client.end.bind(client))
+      drainmade = true
+    }
   }// end main callback from hell
 }
