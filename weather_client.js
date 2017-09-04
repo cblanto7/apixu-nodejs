@@ -5,21 +5,21 @@ const WEEK_NUMBER = 1 // Todo: make variable not constant
 var globObjsParsed = 0
 
 // ********************************* connection to postgreSQL
-const { Pool } = require('pg')
+const { Client } = require('pg')
 // const connectionString = 'postgres://***REMOVED***:***REMOVED***@aws-us-east-1-portal.29.dblayer.com:***REMOVED***'
 const connectionString = 'postgres://***REMOVED***:***REMOVED***@aws-us-east-1-portal.9.dblayer.com:20947/***REMOVED***'
 
-const pool = new Pool({
+const client = new Client({
   connectionString: connectionString
 })
 
 const query = {
   // give the query a unique name
-  name: 'testing weather pool',
+  name: 'testing weather client',
   text: 'SELECT week, zip, ampm, stringdateofgame, startofweather, starthour, timevalue FROM weathertable WHERE week = ' + WEEK_NUMBER + ' order by zip, timevalue'
 }
 
-pool.connect((err) => {
+client.connect((err) => {
   if (err) {
     console.error('connection error', err.stack)
   } else {
@@ -28,7 +28,7 @@ pool.connect((err) => {
 })
 
 // callback
-pool.query(query, (err, res) => {
+client.query(query, (err, res) => {
   if (err) {
     console.log(err.stack)
   } else {
@@ -36,6 +36,8 @@ pool.query(query, (err, res) => {
     determineHours(res.rows)
   }
 })
+
+client.on('drain', client.end.bind(client))
 
 // ************************************************ end connection stuff
 
@@ -315,43 +317,43 @@ var processDays = function (err, days, rows, target, zip, callback) { // from ap
   if (err) {
     console.log(err.stack)
   } else {
-    pool.query(buildUpdate(days, 1, zip, target), (err, res) => {
+    client.query(buildUpdate(days, 1, zip, target), (err, res) => {
       if (err) {
         console.log(err.stack)
       } else {
-        pool.query(buildUpdate(days, 2, zip, target), (err, res) => {
+        client.query(buildUpdate(days, 2, zip, target), (err, res) => {
           if (err) {
             console.log(err.stack)
           } else {
-            pool.query(buildUpdate(days, 3, zip, target + 1), (err) => {
+            client.query(buildUpdate(days, 3, zip, target + 1), (err) => {
               if (err) {
                 console.error(err.stack)
               } else {
-                pool.query(buildUpdate(days, 4, zip, target + 1), (err) => {
+                client.query(buildUpdate(days, 4, zip, target + 1), (err) => {
                   if (err) {
                     console.error(err.stack)
                   } else {
-                    pool.query(buildUpdate(days, 5, zip, target + 2), (err) => {
+                    client.query(buildUpdate(days, 5, zip, target + 2), (err) => {
                       if (err) {
                         console.error(err.stack)
                       } else {
-                        pool.query(buildUpdate(days, 6, zip, target + 2), (err) => {
+                        client.query(buildUpdate(days, 6, zip, target + 2), (err) => {
                           if (err) {
                             console.error(err.stack)
                           } else {
-                            pool.query(buildUpdate(days, 7, zip, target + 3), (err) => {
+                            client.query(buildUpdate(days, 7, zip, target + 3), (err) => {
                               if (err) {
                                 console.error(err.stack)
                               } else {
-                                pool.query(buildUpdate(days, 8, zip, target + 3), (err) => {
+                                client.query(buildUpdate(days, 8, zip, target + 3), (err) => {
                                   if (err) {
                                     console.error(err.stack)
                                   } else {
-                                    pool.query(buildUpdate(days, 9, zip, target + 4), (err) => {
+                                    client.query(buildUpdate(days, 9, zip, target + 4), (err) => {
                                       if (err) {
                                         console.error(err.stack)
                                       } else {
-                                        pool.query('COMMIT', (err) => {
+                                        client.query('COMMIT', (err) => {
                                           if (err) {
                                             console.error('Error committing transaction', err.stack)
                                           } else {
