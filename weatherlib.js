@@ -1,6 +1,6 @@
 var http = require('http')
 
-var apiKey = '***REMOVED***'
+var apiKey = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 
 var options = {
   host: 'api.apixu.com',

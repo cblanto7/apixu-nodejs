@@ -7,7 +7,7 @@ var drainmade = false
 
 // ********************************* connection to postgreSQL
 const { Client } = require('pg')
-const connectionString = 'postgres://***REMOVED***:***REMOVED***@aws-us-east-1-portal.29.dblayer.com:***REMOVED***'
+const connectionString = 'postgres://xxxxxxxxxx:xxxxxxxxxxxxxxx@aws-us-east-1-portal.xx.dblayer.com:xxxxx/xxxxxxx'
 
 const client = new Client({
   connectionString: connectionString
