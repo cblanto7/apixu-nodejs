@@ -44,11 +44,14 @@ var determineHours = function (rows) { // from weathertable SQL db
   var zips = []
 
   var i = 0
+  var start = 0
   for (var j = 0; j < rows.length; j += 9) { // every 9 items there is a new zip code
     if (rows[j].ampm === 'PM' && rows[j].starthour < 12) {
-      var start = parseInt(rows[j].starthour)
+      start = parseInt(rows[j].starthour)
       start += 12
-    } else {}
+    } else {
+      start = parseInt(rows[j].starthour)
+    }
 
     zips[i++] = { zip: rows[j].zip, start: start }
   }
