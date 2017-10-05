@@ -1,3 +1,6 @@
+node_modules
+check.sql
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
